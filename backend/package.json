@@ -1,0 +1,17 @@
+{
+  "name": "cooshop-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/app.js",
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.6.0",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3"
+  }
+}
