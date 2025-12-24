@@ -18,7 +18,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// Render 배포 시 포트 충돌 방지: 백엔드는 내부 포트 4000 사용 (Nuxt가 3000/PORT 사용)
+const PORT = process.env.BACKEND_PORT || 4000;
 
 // Rate Limiter 설정 (API 전체: 15분에 100회)
 const limiter = rateLimit({
@@ -42,9 +43,9 @@ app.use(helmet({
 
 // CORS 설정: 배포된 도메인과 로컬호스트 허용
 const allowedOrigins = [
-    'https://cooshop-backend.onrender.com',
-    'http://localhost:5173',
-    'http://localhost:3000'
+    'https://cooshop-backend.onrender.com', // Nuxt Frontend (Render)
+    'http://localhost:3000', // Local Nuxt
+    'http://localhost:3001'  // Local Nuxt (Dev)
 ];
 
 app.use(cors({
@@ -63,10 +64,6 @@ app.use(cors({
 app.use('/api', limiter, checkReferer);
 app.use(express.json());
 
-// 프론트엔드 정적 파일 서빙 (프로덕션)
-const frontendPath = join(__dirname, '../../frontend/dist');
-app.use(express.static(frontendPath));
-
 // Routes
 app.use('/api/products', productRoutes);
 // 관리자 경로 난독화 + Brute Force 방지 Limiter 적용
@@ -77,12 +74,7 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// SPA 라우팅 - API가 아닌 모든 요청은 index.html로
-app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-        res.sendFile(join(frontendPath, 'index.html'));
-    }
-});
+// SPA 라우팅 제거 (Nuxt가 처리)
 
 // Initialize database and start server
 const startServer = async () => {

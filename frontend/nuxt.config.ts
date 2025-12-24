@@ -14,7 +14,8 @@ export default defineNuxtConfig({
     // 런타임 설정 (환경 변수)
     runtimeConfig: {
         // 서버만 접근 가능 (비공개)
-        backendUrl: process.env.BACKEND_URL || 'http://localhost:3000',
+        // 백엔드(Express)는 항상 localhost:4000에서 실행됨 (concurrently)
+        backendUrl: process.env.BACKEND_URL || 'http://localhost:4000',
         // 클라이언트도 접근 가능 (공개)
         public: {
             apiBase: '/api'
@@ -42,9 +43,9 @@ export default defineNuxtConfig({
     // Nitro 서버 설정 (API 프록시)
     nitro: {
         routeRules: {
-            // 백엔드 API 프록시 (개발용)
+            // 백엔드 API 프록시
             '/api/**': {
-                proxy: process.env.BACKEND_URL || 'http://localhost:3000/api/**'
+                proxy: process.env.BACKEND_URL || 'http://localhost:4000/api/**'
             }
         }
     }
