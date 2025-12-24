@@ -5,6 +5,12 @@ import { RouterView } from 'vue-router'
 <template>
   <div id="app">
     <RouterView />
+    <footer class="footer">
+      <p class="disclaimer">
+        "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
+      </p>
+      <p class="copyright">© 2025 Cooshop. All rights reserved.</p>
+    </footer>
   </div>
 </template>
 
@@ -35,5 +41,26 @@ body {
 
 #app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.disclaimer {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.copyright {
+  font-size: 0.75rem;
+  color: #adb5bd;
 }
 </style>
