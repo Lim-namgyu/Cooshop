@@ -156,6 +156,7 @@ onMounted(() => {
                   <th>Name</th>
                   <th>Price</th>
                   <th>Discount</th>
+                  <th>Logs</th>
                   <th>Last Updated</th>
                 </tr>
               </thead>
@@ -170,6 +171,7 @@ onMounted(() => {
                         {{ Math.round((1 - p.current_price / p.max_price) * 100) }}%
                     </span>
                   </td>
+                  <td>{{ p.history_count || 0 }}</td>
                   <td>{{ formatDate(p.updated_at) }}</td>
                 </tr>
               </tbody>

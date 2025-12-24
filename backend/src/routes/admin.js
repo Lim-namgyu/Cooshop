@@ -66,7 +66,11 @@ router.get('/products', (req, res) => {
         const offset = (page - 1) * limit;
         const db = getDatabase();
 
-        let query = 'SELECT * FROM products';
+        let query = `
+            SELECT p.*, 
+            (SELECT COUNT(*) FROM price_history ph WHERE ph.product_id = p.id) as history_count 
+            FROM products p
+        `;
         let countQuery = 'SELECT COUNT(*) as count FROM products';
         let params = [];
 
