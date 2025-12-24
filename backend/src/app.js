@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import productRoutes from './routes/products.js';
@@ -19,15 +20,23 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
-// Rate Limiter 설정 (15분에 100회 요청 제한)
+// Rate Limiter 설정 (API 전체: 15분에 100회)
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
     message: { error: 'Too many requests, please try again later.' }
 });
 
+// 관리자 로그인 시도 제한 (10분에 10회 - Brute Force 방지)
+const adminLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 10,
+    message: { error: 'Too many login attempts, please try again after 10 minutes.' }
+});
+
 // Middleware
+app.use(helmet()); // 보안 헤더 설정 (XSS 보호, 등)
+
 // CORS 설정: 배포된 도메인과 로컬호스트 허용
 const allowedOrigins = [
     'https://cooshop-backend.onrender.com',
@@ -57,8 +66,8 @@ app.use(express.static(frontendPath));
 
 // Routes
 app.use('/api/products', productRoutes);
-// 관리자 경로 난독화
-app.use('/api/sys-admin-control', adminRoutes);
+// 관리자 경로 난독화 + Brute Force 방지 Limiter 적용
+app.use('/api/sys-admin-control', adminLimiter, adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
