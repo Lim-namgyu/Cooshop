@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import productRoutes from './routes/products.js';
@@ -14,8 +15,36 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
+// Rate Limiter 설정 (15분에 100회 요청 제한)
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { error: 'Too many requests, please try again later.' }
+});
+
 // Middleware
-app.use(cors());
+// CORS 설정: 배포된 도메인과 로컬호스트 허용
+const allowedOrigins = [
+    'https://cooshop-backend.onrender.com',
+    'http://localhost:5173',
+    'http://localhost:3000'
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // origin이 없으면(서버간 통신 등) 허용
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
+
+// API 라우트에만 Rate Limit 적용
+app.use('/api', limiter);
 app.use(express.json());
 
 // 프론트엔드 정적 파일 서빙 (프로덕션)
