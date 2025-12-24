@@ -6,5 +6,9 @@
     {
         "key": "COUPANG_SECRET_KEY",
         "value": "934df2a9adb8c3a22b189a0b290463b959614780"
+    },
+    {
+        "key": "VITE_API_URL",
+        "value": "/api"
     }
 ]

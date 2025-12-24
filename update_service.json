@@ -1,0 +1,9 @@
+{
+    "rootDir": "",
+    "serviceDetails": {
+        "envSpecificDetails": {
+            "buildCommand": "cd frontend && npm install && npm run build && cd ../backend && npm install",
+            "startCommand": "cd backend && npm start"
+        }
+    }
+}

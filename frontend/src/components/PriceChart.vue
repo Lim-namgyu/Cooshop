@@ -93,7 +93,7 @@ const chartOptions = {
     y: {
       beginAtZero: false,
       ticks: {
-        callback: (value: number) => `${(value / 10000).toFixed(0)}만`
+        callback: (value: string | number) => `${(Number(value) / 10000).toFixed(0)}만`
       }
     }
   }
