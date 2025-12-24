@@ -34,28 +34,47 @@ export const updateProductPrice = async (productId) => {
 export const searchAndSaveProducts = async (keyword) => {
     const products = await coupangService.searchProducts(keyword);
 
-    const savedProducts = products.map(product => {
+    const savedProducts = [];
+    for (const product of products) {
         const normalized = coupangService.normalizeProduct(product);
         productQueries.upsert(normalized);
         priceHistoryQueries.insert(normalized.id, normalized.current_price);
-        return normalized;
-    });
+
+        // UUID 포함된 최신 정보 조회 (외부 노출용 id 매핑)
+        const saved = productQueries.findById(normalized.id);
+        if (saved) {
+            savedProducts.push({
+                ...saved,
+                id: saved.uuid // 내부 ID 대신 UUID 반환
+            });
+        }
+    }
 
     return savedProducts;
 };
 
 /**
  * 상품 상세 정보 조회 (가격 이력 포함)
+ * @param {string} idOrUuid - 상품 ID (내부 ID 또는 UUID)
  */
-export const getProductWithHistory = (productId, days = 30) => {
-    const product = productQueries.findById(productId);
+export const getProductWithHistory = (idOrUuid, days = 30) => {
+    // 1. UUID로 먼저 조회
+    let product = productQueries.findByUuid(idOrUuid);
+
+    // 2. 없으면 내부 ID로 조회 (하위 호환성)
+    if (!product) {
+        product = productQueries.findById(idOrUuid);
+    }
 
     if (!product) {
         return null;
     }
 
-    const history = priceHistoryQueries.findByProductId(productId, days);
-    const stats = priceHistoryQueries.getStats(productId);
+    // 내부 로직은 실제 ID 사용
+    const internalId = product.id;
+
+    const history = priceHistoryQueries.findByProductId(internalId, days);
+    const stats = priceHistoryQueries.getStats(internalId);
 
     // 할인율 계산
     const discountRate = stats?.max_price > 0
@@ -64,6 +83,7 @@ export const getProductWithHistory = (productId, days = 30) => {
 
     return {
         ...product,
+        id: product.uuid, // 외부 노출용 ID는 무조건 UUID 사용
         history: history.map(h => ({
             price: h.price,
             date: h.recorded_at
