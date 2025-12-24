@@ -51,7 +51,7 @@ const getHeaders = () => ({
 
 const fetchStats = async () => {
   try {
-    const res = await fetch(`${API_URL}/admin/stats`, { headers: getHeaders() });
+    const res = await fetch(`${API_URL}/sys-admin-control/stats`, { headers: getHeaders() });
     if (!res.ok) throw new Error(res.statusText);
     stats.value = await res.json();
     fetchProducts();
@@ -65,7 +65,7 @@ const fetchStats = async () => {
 const fetchProducts = async (pageNum = 1) => {
   loading.value = true;
   try {
-    const res = await fetch(`${API_URL}/admin/products?page=${pageNum}`, { headers: getHeaders() });
+    const res = await fetch(`${API_URL}/sys-admin-control/products?page=${pageNum}`, { headers: getHeaders() });
     if (res.ok) {
       const data = await res.json();
       products.value = data.data;

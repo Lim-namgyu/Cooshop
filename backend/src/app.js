@@ -9,6 +9,7 @@ import adminRoutes from './routes/admin.js';
 import { initDatabase } from './models/database.js';
 import { startScheduler } from './services/scheduler.js';
 import { initializeData } from './services/initData.js';
+import { checkReferer } from './middleware/security.js';
 
 dotenv.config();
 
@@ -46,8 +47,8 @@ app.use(cors({
     credentials: true
 }));
 
-// API 라우트에만 Rate Limit 적용
-app.use('/api', limiter);
+// API 라우트에만 Rate Limit 및 Referer 체크 적용
+app.use('/api', limiter, checkReferer);
 app.use(express.json());
 
 // 프론트엔드 정적 파일 서빙 (프로덕션)
@@ -56,7 +57,8 @@ app.use(express.static(frontendPath));
 
 // Routes
 app.use('/api/products', productRoutes);
-app.use('/api/admin', adminRoutes);
+// 관리자 경로 난독화
+app.use('/api/sys-admin-control', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

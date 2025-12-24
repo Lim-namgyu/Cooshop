@@ -17,7 +17,7 @@ const router = createRouter({
             props: true
         },
         {
-            path: '/admin',
+            path: '/sys-admin-control',
             name: 'admin',
             component: () => import('../views/AdminView.vue')
         }

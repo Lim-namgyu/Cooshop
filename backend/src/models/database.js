@@ -95,11 +95,14 @@ export const productQueries = {
   },
 
   findAll: (limit = 20, offset = 0) => {
+    // 보안: 최대 20개로 제한
+    const safeLimit = Math.min(limit, 20);
     return getDatabase().prepare(`
-      SELECT * FROM products 
+      SELECT id, name, image_url, product_url, category_name, current_price, min_price, max_price, avg_price, updated_at
+      FROM products 
       ORDER BY updated_at DESC 
       LIMIT ? OFFSET ?
-    `).all(limit, offset);
+    `).all(safeLimit, offset);
   },
 
   findOldestOne: () => {
@@ -117,8 +120,10 @@ export const productQueries = {
   },
 
   findByDiscountRate: (limit = 20) => {
+    // 보안: 최대 20개로 제한
+    const safeLimit = Math.min(limit, 20);
     return getDatabase().prepare(`
-      SELECT *, 
+      SELECT id, name, image_url, product_url, category_name, current_price, min_price, max_price, avg_price, updated_at, 
         CASE WHEN max_price > 0 
           THEN ROUND((1.0 - (current_price * 1.0 / max_price)) * 100, 1) 
           ELSE 0 
@@ -127,7 +132,7 @@ export const productQueries = {
       WHERE max_price > 0 AND current_price < max_price
       ORDER BY discount_rate DESC 
       LIMIT ?
-    `).all(limit);
+    `).all(safeLimit);
   },
 
   count: () => {
