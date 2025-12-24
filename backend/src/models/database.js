@@ -128,6 +128,11 @@ export const productQueries = {
       ORDER BY discount_rate DESC 
       LIMIT ?
     `).all(limit);
+  },
+
+  count: () => {
+    const result = getDatabase().prepare('SELECT COUNT(*) as count FROM products').get();
+    return result.count;
   }
 };
 

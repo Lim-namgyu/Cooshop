@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 import productRoutes from './routes/products.js';
 import { initDatabase } from './models/database.js';
 import { startScheduler } from './services/scheduler.js';
+import { initializeData } from './services/initData.js';
 
 dotenv.config();
 
@@ -71,6 +72,9 @@ app.get('*', (req, res) => {
 const startServer = async () => {
     try {
         await initDatabase();
+
+        // 초기 데이터 적재 (비동기 실행)
+        initializeData();
 
         // 스케줄러 시작 (백그라운드에서 가격 업데이트)
         startScheduler();
