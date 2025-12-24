@@ -102,6 +102,20 @@ export const productQueries = {
     `).all(limit, offset);
   },
 
+  findOldestOne: () => {
+    return getDatabase().prepare(`
+      SELECT * FROM products 
+      ORDER BY updated_at ASC 
+      LIMIT 1
+    `).get();
+  },
+
+  touch: (id) => {
+    return getDatabase().prepare(`
+      UPDATE products SET updated_at = CURRENT_TIMESTAMP WHERE id = ?
+    `).run(id);
+  },
+
   findByDiscountRate: (limit = 20) => {
     return getDatabase().prepare(`
       SELECT *, 

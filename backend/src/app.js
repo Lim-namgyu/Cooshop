@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import productRoutes from './routes/products.js';
 import { initDatabase } from './models/database.js';
+import { startScheduler } from './services/scheduler.js';
 
 dotenv.config();
 
@@ -70,6 +71,10 @@ app.get('*', (req, res) => {
 const startServer = async () => {
     try {
         await initDatabase();
+
+        // 스케줄러 시작 (백그라운드에서 가격 업데이트)
+        startScheduler();
+
         app.listen(PORT, () => {
             console.log(`Server running on http://localhost:${PORT}`);
         });

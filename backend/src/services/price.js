@@ -82,9 +82,33 @@ export const getTopDiscountProducts = (limit = 20) => {
     return productQueries.findByDiscountRate(limit);
 };
 
+/**
+ * 상품명으로 검색하여 가격 업데이트 (스케줄러용)
+ */
+export const updatePriceByName = async (product) => {
+    // 1. 상품명으로 검색
+    const searchResults = await coupangService.searchProducts(product.name);
+
+    // 2. 검색 결과에서 ID가 일치하는 상품 찾기
+    const targetItem = searchResults.find(item => String(item.productId) === product.id);
+
+    if (targetItem) {
+        const normalized = coupangService.normalizeProduct(targetItem);
+
+        // 3. 가격이 변동되었으면 업데이트 (혹은 항상 업데이트하여 latest_check 갱신)
+        productQueries.upsert(normalized);
+        priceHistoryQueries.insert(normalized.id, normalized.current_price);
+
+        return normalized;
+    }
+
+    return null;
+};
+
 export default {
     updateProductPrice,
     searchAndSaveProducts,
     getProductWithHistory,
-    getTopDiscountProducts
+    getTopDiscountProducts,
+    updatePriceByName
 };
