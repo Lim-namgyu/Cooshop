@@ -86,8 +86,9 @@ export const getTopDiscountProducts = (limit = 20) => {
  * 상품명으로 검색하여 가격 업데이트 (스케줄러용)
  */
 export const updatePriceByName = async (product) => {
-    // 1. 상품명으로 검색
-    const searchResults = await coupangService.searchProducts(product.name);
+    // 1. 상품명으로 검색 (API 제한으로 인해 최대 40자)
+    const keyword = product.name.length > 40 ? product.name.substring(0, 40) : product.name;
+    const searchResults = await coupangService.searchProducts(keyword);
 
     // 2. 검색 결과에서 ID가 일치하는 상품 찾기
     const targetItem = searchResults.find(item => String(item.productId) === product.id);
