@@ -9,9 +9,7 @@ node_modules/
 dist/
 
 # Database
-backend/data/*.db
-backend/data/*.db-journal
-backend/data/*.db-wal
+backend/data/
 
 # IDE
 .vscode/
