@@ -35,7 +35,10 @@ const adminLimiter = rateLimit({
 });
 
 // Middleware
-app.use(helmet()); // 보안 헤더 설정 (XSS 보호, 등)
+app.use(helmet({
+    contentSecurityPolicy: false, // CSP 이슈 방지를 위해 일단 false 혹은 설정 완화
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' } // Referer 헤더 전송 허용
+}));
 
 // CORS 설정: 배포된 도메인과 로컬호스트 허용
 const allowedOrigins = [
