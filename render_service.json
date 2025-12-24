@@ -1,0 +1,29 @@
+{
+    "type": "web_service",
+    "name": "cooshop-backend",
+    "ownerId": "tea-d4ki2aogjchc73a6fr7g",
+    "repo": "https://github.com/Lim-namgyu/Cooshop",
+    "autoDeploy": "yes",
+    "branch": "master",
+    "rootDir": "backend",
+    "serviceDetails": {
+        "plan": "starter",
+        "runtime": "node",
+        "region": "oregon",
+        "numInstances": 1,
+        "envSpecificDetails": {
+            "buildCommand": "npm install",
+            "startCommand": "npm start"
+        },
+        "envVars": [
+            {
+                "key": "COUPANG_ACCESS_KEY",
+                "value": "b81df598-4e57-4f38-9f01-2cccd9999315"
+            },
+            {
+                "key": "COUPANG_SECRET_KEY",
+                "value": "934df2a9adb8c3a22b189a0b290463b959614780"
+            }
+        ]
+    }
+}

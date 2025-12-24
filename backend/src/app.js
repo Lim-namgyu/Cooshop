@@ -18,12 +18,23 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// 프론트엔드 정적 파일 서빙 (프로덕션)
+const frontendPath = join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendPath));
+
 // Routes
 app.use('/api/products', productRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// SPA 라우팅 - API가 아닌 모든 요청은 index.html로
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+        res.sendFile(join(frontendPath, 'index.html'));
+    }
 });
 
 // Initialize database and start server
