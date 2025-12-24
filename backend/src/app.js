@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import productRoutes from './routes/products.js';
+import adminRoutes from './routes/admin.js';
 import { initDatabase } from './models/database.js';
 import { startScheduler } from './services/scheduler.js';
 import { initializeData } from './services/initData.js';
@@ -55,6 +56,7 @@ app.use(express.static(frontendPath));
 
 // Routes
 app.use('/api/products', productRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
