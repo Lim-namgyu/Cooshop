@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
 const emit = defineEmits<{
   search: [keyword: string]
 }>()
 
-const router = useRouter()
 const keyword = ref('')
 const isLoading = ref(false)
 
@@ -71,14 +67,14 @@ const searchWithKeyword = (kw: string) => {
   flex: 1;
   padding: 1rem 1.5rem;
   font-size: 1rem;
-  border: 2px solid var(--border-color);
+  border: 2px solid #ddd;
   border-radius: 12px;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .search-input:focus {
-  border-color: var(--primary-color);
+  border-color: #4a6cf7;
 }
 
 .search-button {
@@ -86,7 +82,7 @@ const searchWithKeyword = (kw: string) => {
   font-size: 1rem;
   font-weight: 600;
   color: white;
-  background-color: var(--primary-color);
+  background-color: #4a6cf7;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -94,7 +90,7 @@ const searchWithKeyword = (kw: string) => {
 }
 
 .search-button:hover:not(:disabled) {
-  background-color: var(--primary-hover);
+  background-color: #3a5ac7;
 }
 
 .search-button:disabled {
@@ -111,24 +107,24 @@ const searchWithKeyword = (kw: string) => {
 }
 
 .label {
-  color: var(--text-muted);
+  color: #888;
   font-size: 0.875rem;
 }
 
 .keyword-tag {
   padding: 0.375rem 0.75rem;
   font-size: 0.875rem;
-  color: var(--text-color);
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
+  color: #333;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .keyword-tag:hover {
-  background-color: var(--primary-color);
+  background-color: #4a6cf7;
   color: white;
-  border-color: var(--primary-color);
+  border-color: #4a6cf7;
 }
 </style>

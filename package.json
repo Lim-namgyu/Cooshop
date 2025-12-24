@@ -3,9 +3,12 @@
     "version": "1.0.0",
     "scripts": {
         "build": "cd frontend && npm install && npm run build && cd ../backend && npm install",
-        "start": "cd backend && npm start"
+        "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm run preview\""
     },
     "engines": {
         "node": ">=20"
+    },
+    "dependencies": {
+        "concurrently": "^9.2.1"
     }
 }

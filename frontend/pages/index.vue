@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import SearchBar from '../components/SearchBar.vue'
-import ProductCard from '../components/ProductCard.vue'
-
 interface Product {
   id: string
   name: string
@@ -13,12 +9,20 @@ interface Product {
   avg_price: number
 }
 
+// SEO 메타 태그
+useHead({
+  title: 'Cooshop - 쿠팡 가격 추적',
+  meta: [
+    { name: 'description', content: '쿠팡 상품 가격 변동을 추적하고 최적의 구매 시점을 찾아보세요!' }
+  ]
+})
+
 const products = ref<Product[]>([])
 const isLoading = ref(false)
 const error = ref('')
 const hasSearched = ref(false)
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const config = useRuntimeConfig()
 
 const handleSearch = async (keyword: string) => {
   isLoading.value = true
@@ -26,13 +30,16 @@ const handleSearch = async (keyword: string) => {
   hasSearched.value = true
 
   try {
-    const response = await fetch(`${API_BASE}/products/search?q=${encodeURIComponent(keyword)}`)
-    const data = await response.json()
+    const { data, error: fetchError } = await useFetch<{ success: boolean; data: Product[] }>(
+      `/api/products/search?q=${encodeURIComponent(keyword)}`
+    )
 
-    if (data.success) {
-      products.value = data.data
+    if (fetchError.value) {
+      error.value = '검색 중 오류가 발생했습니다.'
+    } else if (data.value?.success) {
+      products.value = data.value.data
     } else {
-      error.value = data.error || '검색 중 오류가 발생했습니다.'
+      error.value = '검색 결과를 불러올 수 없습니다.'
     }
   } catch (err) {
     console.error('Search error:', err)
@@ -139,8 +146,8 @@ const handleSearch = async (keyword: string) => {
 .spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid var(--border-color);
-  border-top-color: var(--primary-color);
+  border: 4px solid #ddd;
+  border-top-color: #4a6cf7;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -152,11 +159,11 @@ const handleSearch = async (keyword: string) => {
 .error, .no-results {
   text-align: center;
   padding: 4rem;
-  color: var(--text-muted);
+  color: #888;
 }
 
 .error p {
-  color: var(--primary-color);
+  color: #dc3545;
 }
 
 .results h2 {
@@ -183,9 +190,9 @@ const handleSearch = async (keyword: string) => {
 .feature {
   text-align: center;
   padding: 2rem;
-  background: var(--card-bg);
+  background: #fff;
   border-radius: 12px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .feature .icon {
@@ -200,6 +207,6 @@ const handleSearch = async (keyword: string) => {
 }
 
 .feature p {
-  color: var(--text-muted);
+  color: #888;
 }
 </style>

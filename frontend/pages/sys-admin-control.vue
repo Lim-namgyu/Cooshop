@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+// 관리자 페이지: 클라이언트 사이드 전용 (SSR 불필요)
+definePageMeta({
+  ssr: false // 관리자 페이지는 SSR 비활성화
+});
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
 const isAuthenticated = ref(false);
 const password = ref('');
 const error = ref('');
@@ -13,19 +15,18 @@ const page = ref(1);
 const totalPages = ref(1);
 const loading = ref(false);
 
-const checkAuth = () => {
+onMounted(() => {
   const stored = localStorage.getItem('admin_pwd');
   if (stored) {
     password.value = stored;
     fetchStats();
     isAuthenticated.value = true;
   }
-};
+});
 
 const login = async () => {
   if (!password.value) return;
   
-  // Test authentication by fetching stats
   const ok = await fetchStats();
   if (ok) {
     localStorage.setItem('admin_pwd', password.value);
@@ -51,7 +52,7 @@ const getHeaders = () => ({
 
 const fetchStats = async () => {
   try {
-    const res = await fetch(`${API_URL}/sys-admin-control/stats`, { headers: getHeaders() });
+    const res = await fetch(`/api/sys-admin-control/stats`, { headers: getHeaders() });
     if (!res.ok) throw new Error(res.statusText);
     stats.value = await res.json();
     fetchProducts();
@@ -65,7 +66,7 @@ const fetchStats = async () => {
 const fetchProducts = async (pageNum = 1) => {
   loading.value = true;
   try {
-    const res = await fetch(`${API_URL}/sys-admin-control/products?page=${pageNum}`, { headers: getHeaders() });
+    const res = await fetch(`/api/sys-admin-control/products?page=${pageNum}`, { headers: getHeaders() });
     if (res.ok) {
       const data = await res.json();
       products.value = data.data;
@@ -87,10 +88,6 @@ const formatDate = (dateStr: string) => {
 const formatPrice = (price: number) => {
   return price?.toLocaleString() + '원';
 };
-
-onMounted(() => {
-  checkAuth();
-});
 </script>
 
 <template>

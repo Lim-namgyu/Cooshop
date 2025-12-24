@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-
 interface Product {
   id: string
   name: string
@@ -16,8 +13,6 @@ interface Product {
 const props = defineProps<{
   product: Product
 }>()
-
-const router = useRouter()
 
 // 할인율 계산
 const discountRate = computed(() => {
@@ -45,7 +40,7 @@ const priceLabel = computed(() => {
 })
 
 const goToDetail = () => {
-  router.push({ name: 'product', params: { id: props.product.id } })
+  navigateTo(`/product/${props.product.id}`)
 }
 </script>
 
@@ -90,10 +85,10 @@ const goToDetail = () => {
 <style scoped>
 .product-card {
   position: relative;
-  background: var(--card-bg);
+  background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -119,7 +114,7 @@ const goToDetail = () => {
   font-size: 0.875rem;
   font-weight: 700;
   color: white;
-  background-color: var(--primary-color);
+  background-color: #4a6cf7;
   border-radius: 4px;
 }
 
@@ -164,7 +159,7 @@ const goToDetail = () => {
 .name {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-color);
+  color: #333;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -183,12 +178,12 @@ const goToDetail = () => {
 .current-price {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #4a6cf7;
 }
 
 .original-price {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: #999;
   text-decoration: line-through;
 }
 
@@ -196,6 +191,6 @@ const goToDetail = () => {
   display: flex;
   gap: 0.75rem;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #888;
 }
 </style>

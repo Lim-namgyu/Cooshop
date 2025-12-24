@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -140,24 +139,26 @@ const formatPrice = (price: number) => {
     </div>
 
     <div class="chart-container">
-      <Line 
-        v-if="filteredHistory.length > 0" 
-        :data="chartData" 
-        :options="chartOptions" 
-      />
-      <div v-else class="no-data">
-        가격 이력이 없습니다.
-      </div>
+      <ClientOnly>
+        <Line 
+          v-if="filteredHistory.length > 0" 
+          :data="chartData" 
+          :options="chartOptions" 
+        />
+        <div v-else class="no-data">
+          가격 이력이 없습니다.
+        </div>
+      </ClientOnly>
     </div>
   </div>
 </template>
 
 <style scoped>
 .price-chart {
-  background: var(--card-bg);
+  background: #fff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .chart-header {
@@ -180,7 +181,7 @@ const formatPrice = (price: number) => {
 .period-btn {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid #ddd;
   background: white;
   border-radius: 8px;
   cursor: pointer;
@@ -188,9 +189,9 @@ const formatPrice = (price: number) => {
 }
 
 .period-btn.active {
-  background: var(--primary-color);
+  background: #4a6cf7;
   color: white;
-  border-color: var(--primary-color);
+  border-color: #4a6cf7;
 }
 
 .stats-row {
@@ -199,7 +200,7 @@ const formatPrice = (price: number) => {
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: var(--bg-color);
+  background: #f8f9fa;
   border-radius: 8px;
 }
 
@@ -210,7 +211,7 @@ const formatPrice = (price: number) => {
 .stat-label {
   display: block;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #888;
   margin-bottom: 0.25rem;
 }
 
@@ -220,7 +221,7 @@ const formatPrice = (price: number) => {
 }
 
 .stat-value.current {
-  color: var(--primary-color);
+  color: #4a6cf7;
 }
 
 .stat-value.lowest {
@@ -236,7 +237,7 @@ const formatPrice = (price: number) => {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: var(--text-muted);
+  color: #888;
 }
 
 @media (max-width: 768px) {

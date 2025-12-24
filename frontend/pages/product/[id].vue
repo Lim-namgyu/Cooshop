@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import PriceChart from '../components/PriceChart.vue'
-
 interface PriceHistory {
   price: number
   date: string
@@ -28,42 +24,32 @@ interface Product {
   stats: Stats
 }
 
-const props = defineProps<{
-  id: string
-}>()
-
 const route = useRoute()
-const router = useRouter()
+const productId = route.params.id as string
 
-const product = ref<Product | null>(null)
-const isLoading = ref(true)
-const error = ref('')
+// SSR: 서버 사이드에서 데이터 페칭
+const { data: response, pending, error } = await useFetch<{ success: boolean; data: Product }>(
+  `/api/products/${productId}`
+)
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const product = computed(() => response.value?.data || null)
+
+// SEO: 동적 메타 태그
+useHead({
+  title: computed(() => product.value ? `${product.value.name} - Cooshop` : 'Cooshop'),
+  meta: [
+    { 
+      name: 'description', 
+      content: computed(() => product.value 
+        ? `${product.value.name} 가격 변동 추적. 현재가 ${formatPrice(product.value.current_price)}원`
+        : '쿠팡 상품 가격 추적'
+      )
+    }
+  ]
+})
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('ko-KR').format(price)
-}
-
-const fetchProduct = async () => {
-  isLoading.value = true
-  error.value = ''
-
-  try {
-    const response = await fetch(`${API_BASE}/products/${props.id}`)
-    const data = await response.json()
-
-    if (data.success) {
-      product.value = data.data
-    } else {
-      error.value = data.error || '상품을 불러올 수 없습니다.'
-    }
-  } catch (err) {
-    console.error('Fetch product error:', err)
-    error.value = '서버와 연결할 수 없습니다.'
-  } finally {
-    isLoading.value = false
-  }
 }
 
 const goToCoupang = () => {
@@ -73,12 +59,8 @@ const goToCoupang = () => {
 }
 
 const goBack = () => {
-  router.back()
+  navigateTo('/')
 }
-
-onMounted(() => {
-  fetchProduct()
-})
 </script>
 
 <template>
@@ -87,13 +69,13 @@ onMounted(() => {
       <button class="back-btn" @click="goBack">← 뒤로</button>
     </header>
 
-    <div v-if="isLoading" class="loading">
+    <div v-if="pending" class="loading">
       <div class="spinner"></div>
       <p>상품 정보를 불러오는 중...</p>
     </div>
 
     <div v-else-if="error" class="error">
-      <p>⚠️ {{ error }}</p>
+      <p>⚠️ 상품을 불러올 수 없습니다.</p>
       <button @click="goBack">홈으로 돌아가기</button>
     </div>
 
@@ -142,27 +124,27 @@ onMounted(() => {
 <style scoped>
 .product-view {
   min-height: 100vh;
-  background: var(--bg-color);
+  background: #f8f9fa;
 }
 
 .header {
   background: white;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #eee;
 }
 
 .back-btn {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   background: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid #ddd;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .back-btn:hover {
-  background: var(--bg-color);
+  background: #f8f9fa;
 }
 
 .loading, .error {
@@ -177,8 +159,8 @@ onMounted(() => {
 .spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid var(--border-color);
-  border-top-color: var(--primary-color);
+  border: 4px solid #ddd;
+  border-top-color: #4a6cf7;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -201,13 +183,13 @@ onMounted(() => {
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
 }
 
 .image-container {
   aspect-ratio: 1;
-  background: var(--bg-color);
+  background: #f8f9fa;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
@@ -244,21 +226,21 @@ onMounted(() => {
 .current-price .label {
   display: block;
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: #888;
   margin-bottom: 0.25rem;
 }
 
 .current-price .value {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #4a6cf7;
 }
 
 .price-compare {
   display: flex;
   gap: 2rem;
   padding: 1rem;
-  background: var(--bg-color);
+  background: #f8f9fa;
   border-radius: 8px;
   margin-bottom: 1.5rem;
 }
@@ -266,7 +248,7 @@ onMounted(() => {
 .price-item .label {
   display: block;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #888;
   margin-bottom: 0.25rem;
 }
 
